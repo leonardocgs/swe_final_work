@@ -1,5 +1,6 @@
+package domain.entity;
+
 import java.time.LocalDate;
-import java.util.ArrayList;
 
 public class Reserva{
   private Usuario usuario;

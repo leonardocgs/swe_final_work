@@ -21,8 +21,12 @@ public class AlunoGraduacao extends Usuario {
         if (livro.usuarioPossuiEmprestimo(this)) {
             throw new IllegalArgumentException("O aluno não pode pegar emprestado livros que ele atualmente está em posse.");
         }
-        if (livro.quantidadeExemplaresDisponiveis() >= livro.quantidadeReservas() && !livro.usuarioPossuiReserva(this)) {
-            throw new IllegalArgumentException("O aluno não fez reserva para o livro em questão e a quantide de reservas é maior ou igual que a quantidade de exemplares.");
+
+        if(livro.quantidadeReservas() >=livro.quantidadeExemplaresDisponiveis() && !livro.usuarioPossuiReserva(this)){
+            throw new IllegalArgumentException("O aluno de graduacao não pode fazer emprestimo de um livro cuja quantidade de reserva é maior que o numero de exemplares disponíveis não tendo feito reserva");
+        }
+        if (livro.quantidadeReservas() >= livro.quantidadeDeExemplares() && !livro.usuarioPossuiReserva(this)) {
+            throw new IllegalArgumentException("O aluno de graduacao não fez reserva para o livro em questão se a quantide de reservas é maior ou igual que a quantidade de exemplares.");
         }
     }
 

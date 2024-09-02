@@ -1,4 +1,8 @@
+package domain.entity;
+
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.List;
 
 public abstract class Usuario {
 
@@ -13,11 +17,15 @@ public abstract class Usuario {
     public abstract void verificarPossibilidadeEmprestimo(Livro livro);
 
 
-    public Emprestimo buscarEmprestimo(String codigoLivro){
-        return this.emprestimos.stream().filter(emp -> emp.getCodigoUsuario().equals(codigoLivro)).findFirst().orElse(null);
+    public void verificarPossibilidadeReserva(Livro livro) {
+        if (livro.usuarioPossuiReserva(this)) {
+            throw new IllegalArgumentException("Usuário não pode fazer reserva de um livro que já reservou");
+        }
     }
+
     public abstract int getDiasEmprestimo();
-    public int quantidadeDeEmprestimosAbertos(){
+
+    public int quantidadeDeEmprestimosAbertos() {
         return this.emprestimos.size();
     }
 
@@ -29,35 +37,51 @@ public abstract class Usuario {
         Reserva reserva = livro.buscarReserva(this);
         reservas.remove(reserva);
     }
+
     public void adicionarEmprestimo(Emprestimo emprestimo) {
         this.emprestimos.add(emprestimo);
         this.emprestPerma.add(emprestimo);
     }
+
     public void adicionarReserva(Reserva reserva) {
         this.reservas.add(reserva);
         this.reserPerma.add(reserva);
     }
 
-    public void finalizarEmprestimo(Emprestimo emprestimo){
+    public ArrayList<Emprestimo> getEmprestimos() {
+        return emprestimos;
+    }
+
+    public List<Emprestimo> getTodosEmprestimosFeitos() {
+        return emprestPerma;
+    }
+
+    public ArrayList<Reserva> getReservas() {
+        return reservas;
+    }
+
+    public List<Reserva> getTodasReservas() {
+        return reserPerma;
+    }
+
+    public void finalizarEmprestimo(Emprestimo emprestimo) {
         this.emprestimos.remove(emprestimo);
     }
-    public int getQuantidadeDeReservas(){
+
+    public int getQuantidadeDeReservas() {
         return this.reservas.size();
     }
 
-    public String getNome(){
+    public String getNome() {
         return this.nome;
     }
 
-    public String getCodigoUsuario(){
+    public String getCodigoUsuario() {
         return this.codigoUsuario;
     }
 
-    public void setNome(String nome){
-        this.nome = nome;
-    }
 
-    public void setCodigoUsuario(String codigoUsuario){
+    public void setCodigoUsuario(String codigoUsuario) {
         this.codigoUsuario = codigoUsuario;
     }
 }

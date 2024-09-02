@@ -14,6 +14,11 @@ public class Professor extends Usuario implements Observador {
         if (this.possuiLivroAtrasado()) {
             throw new IllegalArgumentException("O professor não pode pegar emprestado livros tendo emprestimos atrasados.");
         }
+
+        if (livro.usuarioPossuiEmprestimo(this)) {
+            throw new IllegalArgumentException("O professor não pode pegar emprestado livros que ele atualmente está em posse.");
+        }
+
     }
 
     @Override

@@ -1,23 +1,32 @@
-public class Reservar{
+import domain.entity.Livro;
+import domain.entity.Reserva;
+import domain.entity.Usuario;
+
+public class Reservar {
 
 
-  public void reservarLivro(String codigoUsuario, String codigoLivro) {
-    Biblioteca biblioteca = Biblioteca.getInstance();
-    Usuario usuario = biblioteca.buscarUsuario(codigoUsuario);
-    Livro livro = biblioteca.buscarLivro(codigoLivro);
-    if (livro == null) {
-      throw new IllegalArgumentException("Livro não encontrado.");
+    public String reservarLivro(String codigoUsuario, String codigoLivro) {
+        Biblioteca biblioteca = Biblioteca.getInstance();
+        Usuario usuario = biblioteca.buscarUsuario(codigoUsuario);
+        Livro livro = biblioteca.buscarLivro(codigoLivro);
+        if (usuario == null) {
+            throw new IllegalArgumentException("Usuário não encontrado");
+        }
+        if (livro == null) {
+            throw new IllegalArgumentException("Livro não encontrado.");
+        }
+        usuario.verificarPossibilidadeReserva(livro);
+        Reserva reserva = this.criarReserva(livro, usuario);
+        livro.adicionarReserva(reserva);
+        usuario.adicionarReserva(reserva);
+        return "Livro Reservado com sucesso";
     }
-    Reserva reserva =  this.criarReserva(livro,usuario);
-    livro.adicionarReserva(reserva);
-    usuario.adicionarReserva(reserva);
-  }
 
-  private Reserva criarReserva(Livro livro,Usuario usuario) {
-    if (usuario.getQuantidadeDeReservas() >= 3) {
-      throw new IllegalArgumentException("Não pode reservar mais que 3 livros.");
+    private Reserva criarReserva(Livro livro, Usuario usuario) {
+        if (usuario.getQuantidadeDeReservas() >= 3) {
+            throw new IllegalArgumentException("Não pode reservar mais que 3 livros.");
+        }
+        Reserva reserva = new Reserva(usuario, livro);
+        return reserva;
     }
-    Reserva reserva = new Reserva(usuario, livro);
-    return reserva;
-  }
 }

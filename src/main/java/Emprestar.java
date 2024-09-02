@@ -1,34 +1,44 @@
-public class Emprestar{
+import domain.entity.Emprestimo;
+import domain.entity.Exemplar;
+import domain.entity.Livro;
+import domain.entity.Usuario;
 
-  Biblioteca biblioteca = Biblioteca.getInstance();
-  
-  public void emprestarLivro(String codigoUsuario, String codigoLivro) {
-    Usuario usuario = biblioteca.buscarUsuario(codigoUsuario);
-    Livro livro = biblioteca.buscarLivro(codigoLivro);
+public class Emprestar {
 
-    if (livro == null){
-      throw new IllegalArgumentException("Livro não encontrado.");
+
+    public String emprestarLivro(String codigoUsuario, String codigoLivro) {
+        Biblioteca biblioteca = Biblioteca.getInstance();
+        Usuario usuario = biblioteca.buscarUsuario(codigoUsuario);
+        Livro livro = biblioteca.buscarLivro(codigoLivro);
+        if(usuario== null){
+            throw new IllegalArgumentException("Usuário não encontrado");
+        }
+
+        if (livro == null) {
+            throw new IllegalArgumentException("Livro não encontrado.");
+        }
+
+        if (!livro.existeExemplarDisponivel()) {
+            throw new IllegalArgumentException("Livro não disponível para emprestimo, pois já todos os exemplares estão emprestados.");
+        }
+
+        usuario.verificarPossibilidadeEmprestimo(livro);
+        Emprestimo emprestimo = this.criarEmprestimo(livro, usuario);
+        livro.adicionarEmprestimo(emprestimo);
+        usuario.adicionarEmprestimo(emprestimo);
+
+        if (livro.usuarioPossuiReserva(usuario)) {
+            FinalizadorDeReserva.finalizar(livro, usuario);
+        }
+        return "Livro Emprestado com sucesso";
     }
 
-    if (!livro.existeExemplarDisponivel()) {
-      throw new IllegalArgumentException("Exemplar não disponivel.");
+    private Emprestimo criarEmprestimo(Livro livro, Usuario usuario) {
+
+        int diasDeEmprestimo = usuario.getDiasEmprestimo();
+        Exemplar exemplar = livro.getExemplarDisponivel();
+        Emprestimo emprestimo = new Emprestimo(usuario, exemplar, diasDeEmprestimo);
+        exemplar.emprestar(emprestimo);
+        return emprestimo;
     }
-
-    usuario.verificarPossibilidadeEmprestimo(livro);
-    Emprestimo emprestimo = this.criarEmprestimo(livro,usuario);
-    livro.adicionarEmprestimo(emprestimo);
-    usuario.adicionarEmprestimo(emprestimo);
-
-    if(livro.usuarioPossuiReserva(usuario)){
-      FinalizadorDeReserva.finalizar(livro,usuario);
-    }
-  }
-  private Emprestimo criarEmprestimo(Livro livro, Usuario usuario){
-
-    int diasDeEmprestimo = usuario.getDiasEmprestimo();
-    Exemplar exemplar = livro.getExemplarDisponivel();
-    exemplar.emprestar();
-    return new Emprestimo(usuario, exemplar, diasDeEmprestimo);
-
-  }
 }

@@ -3,12 +3,21 @@
 // import org.junit.jupiter.api.Test;
 
 public class Main {
-  public static void main(String[] args) {
-    System.out.println("Hello world!");
-  }
+    public static void main(String[] args) {
+        while (true) {
+            try {
+                System.out.println("Digite um comando");
+                EntradaObj entradaObj = Input.ler();
+                String res = Sistema.getInstance().executar(entradaObj.getComando(), entradaObj.getParametros());
+                if(res == null){
+                    System.out.println("Saindo");
+                    break;
+                }
+                System.out.println(res);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
 
-  // @Test
-  // void addition() {
-  //     assertEquals(2, 1 + 1);
-  // }
 }
